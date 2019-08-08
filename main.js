@@ -22,7 +22,10 @@ server.on('connection', function(socket) {
 // USER   %CPU %MEM COMMAND
 // jvyden 0.0 0.0 ssh
 function getProcesses() {
-  let psaux = child.execSync("ps -aux --no-headers | sort -nrk 3,3").toString()
+  let cmd;
+  if(platform === 'linux')  {cmd = "ps -aux --no-headers | sort -nrk 3,3"}
+  if(platform === 'darwin') {cmd = "ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command | sort -nrk 3,3"}
+  let psaux = child.execSync(cmd).toString()
   processes = psaux.split('\n')
   for(let i=0;i<processes.length;i++) {
     let process = processes[i]
