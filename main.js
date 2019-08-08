@@ -1,5 +1,7 @@
 const net = require('net');
 const child = require('child_process');
+const os = require('os');
+const platform = os.platform()
 const port = 8081
 const host = "0.0.0.0"
 //word-wrap: break-word; white-space: pre-wrap;
