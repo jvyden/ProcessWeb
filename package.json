@@ -1,0 +1,22 @@
+{
+  "name": "processweb",
+  "version": "1.0.0",
+  "description": "View your process list on any device.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvyden420/ProcessWeb.git"
+  },
+  "author": "jvyden420",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/jvyden420/ProcessWeb/issues"
+  },
+  "homepage": "https://github.com/jvyden420/ProcessWeb#readme",
+  "dependencies": {
+    "dotenv": "^8.1.0"
+  }
+}
