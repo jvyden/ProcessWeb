@@ -11,9 +11,7 @@ if(platform === 'win32' && !process.env.SHUTUP) {
 }
 
 if(!fs.existsSync('.env')) {
-  try {
-    fs.copyFileSync(".env.example", ".env")
-  }
+  try { fs.copyFileSync(".env.example", ".env") }
   catch(e) {
     console.error("ERROR: I couldn't make a config: " + e)
     process.exit(1)
