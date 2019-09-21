@@ -5,14 +5,14 @@ const platform = os.platform()
 const port = 8081
 const host = "0.0.0.0"
 //word-wrap: break-word; white-space: pre-wrap;
-html = `<head><meta http-equiv="refresh" content="5"/></head><body style="font-family:monospace;word-wrap: break-word; white-space: pre-wrap;">`
+const html = `<head><meta http-equiv="refresh" content="5"/></head><body style="font-family:monospace;word-wrap: break-word; white-space: pre-wrap;">`
 
 const server = net.createServer();
 server.listen(port, host, () => {console.log(`ProcessWeb is up at ${host}:${port}.`)})
 server.on('connection', function(socket) {
   const cl = socket.remoteAddress + ':' + socket.remotePort
   console.log('Incoming connection from ' + cl);
-  socket.on('data', function(data) {
+  socket.on('data', function() {
     socket.end(`HTTP/1.1 200\n\n${html}${getProcesses()}`)
   })
 })
@@ -22,11 +22,9 @@ server.on('connection', function(socket) {
 // USER   %CPU %MEM COMMAND
 // jvyden 0.0 0.0 ssh
 function getProcesses() {
-  let cmd;
-  if(platform === 'linux')  {cmd = "ps -aux --no-headers | sort -nrk 3,3"}
-  if(platform === 'darwin') {cmd = "ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command | sort -nrk 3,3"}
+  const cmd = (platform === 'linux') ? "ps -aux --no-headers | sort -nrk 3,3" : "ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command | sort -nrk 3,3";
   let psaux = child.execSync(cmd).toString()
-  processes = psaux.split('\n')
+  let processes = psaux.split('\n')
   for(let i=0;i<processes.length;i++) {
     let process = processes[i]
     let pcolumns = process.split(" ")
