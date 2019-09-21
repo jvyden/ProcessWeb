@@ -1,26 +1,40 @@
 const net = require('net');
 const child = require('child_process');
+const dotenv = require("dotenv");
 const os = require('os');
+const fs = require('fs');
 const platform = os.platform()
-const port = 8081
-const host = "0.0.0.0"
-//word-wrap: break-word; white-space: pre-wrap;
-const html = `<head><meta http-equiv="refresh" content="5"/></head><body style="font-family:monospace;word-wrap: break-word; white-space: pre-wrap;">`
+const html = fs.readFileSync("main.html").toString()
+
+if(platform === 'win32' && !process.env.SHUTUP) {
+  console.log("WARNING: Windows isn't officially supported yet. ProcessWeb will still run, but don't expect things to work properly, if it all. Use the SHUTUP global variable to hide this warning. (SHUTUP=true)")
+}
+
+if(!fs.existsSync('.env')) {
+  try {
+    fs.copyFileSync(".env.example", ".env")
+  }
+  catch(e) {
+    console.error("ERROR: I couldn't make a config: " + e)
+    process.exit(1)
+  }
+  console.log("I didn't find a config, so I made one for you.")
+}
+dotenv.config()
+
+const port = process.env.PORT
+const host = process.env.HOST
 
 const server = net.createServer();
 server.listen(port, host, () => {console.log(`ProcessWeb is up at ${host}:${port}.`)})
 server.on('connection', function(socket) {
   const cl = socket.remoteAddress + ':' + socket.remotePort
-  console.log('Incoming connection from ' + cl);
+  console.log('Request from ' + cl);
   socket.on('data', function() {
-    socket.end(`HTTP/1.1 200\n\n${html}${getProcesses()}`)
+    socket.end(`HTTP/1.1 200\n\n${html.replace("<!-- ProcessWeb !-->", getProcesses())}`)
   })
 })
-//USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-//jvyden   22429  0.0  0.0  39664  3540 pts/2    R+   21:23   0:00 ps -aux
 
-// USER   %CPU %MEM COMMAND
-// jvyden 0.0 0.0 ssh
 function getProcesses() {
   const cmd = (platform === 'linux') ? "ps -aux --no-headers | sort -nrk 3,3" : "ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command | sort -nrk 3,3";
   let psaux = child.execSync(cmd).toString()
